@@ -1,0 +1,44 @@
+#!/usr/bin/env node
+
+const { spawn } = require('child_process')
+const fs = require('fs')
+
+const dirName = './books/'
+const fileName = process.argv[2]
+
+if (!fileName) {
+    console.log('Please provide a file name')
+    process.exit(1)
+}
+
+if(fileName.includes('/')) {
+    console.log('Please provide a file name without a /, replace with _ or - instead')
+    process.exit(1)
+}
+
+const scanDestination = dirName + fileName + '_scan_contents'
+
+// check if scanDestination exists as a directory
+if (!fs.existsSync(scanDestination)) {
+    fs.mkdirSync(scanDestination)
+}
+
+// get count of files in scanDestination
+const files = fs.readdirSync(scanDestination)
+const fileCount = files.length
+
+const command = spawn('hp-scan', ["--device=airscan:e0:HP ENVY 4520 series [B3FEEF]", '-o', `${scanDestination}/${fileName}_${fileCount}.png`])
+
+command.stdout.on('data', (data) => {
+    console.log(`stdout: ${data}`)
+})
+
+command.stderr.on('data', (data) => {
+    console.log(`stderr: ${data}`)
+})
+
+command.on('close', (code) => {
+    console.log(`child process exited with code ${code}`)
+})
+
+
