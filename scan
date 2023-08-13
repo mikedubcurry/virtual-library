@@ -27,6 +27,8 @@ if (!fs.existsSync(scanDestination)) {
 const files = fs.readdirSync(scanDestination)
 const fileCount = files.length
 
+// this command takes wayyy too long for this to be a good solution
+// may be possible to modify the underlying python script to make this fast as funk
 const command = spawn('hp-scan', ["--device=airscan:e0:HP ENVY 4520 series [B3FEEF]", '-o', `${scanDestination}/${fileName}_${fileCount}.png`])
 
 command.stdout.on('data', (data) => {
